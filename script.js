@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const message = messageInput.value.trim();
     if (message !== "") {
       sendMessage("user", message);
-      showBotTyping();
       getBotResponse(message);
       messageInput.value = "";
       messageInput.focus();
+      setTimeout(scrollChatToBottom, 0); // Delay scrolling to ensure the message is rendered
     }
   }
 
@@ -32,8 +32,6 @@ document.addEventListener("DOMContentLoaded", function() {
     messageContainer.appendChild(messageContent);
 
     chatMessages.appendChild(messageContainer);
-
-    scrollChatToBottom();
   }
 
   function createMessageContainer(sender) {
@@ -57,30 +55,17 @@ document.addEventListener("DOMContentLoaded", function() {
     return messageIcon;
   }
 
-  function showBotTyping() {
-    const typingIndicator = document.createElement("div");
-    typingIndicator.classList.add("typing-indicator");
-    typingIndicator.textContent = "Bot is typing...";
-    chatMessages.appendChild(typingIndicator);
-  }
-
-  function hideBotTyping() {
-    const typingIndicator = document.querySelector(".typing-indicator");
-    if (typingIndicator) {
-      typingIndicator.remove();
-    }
-  }
-
   function getBotResponse(message) {
     // Simulate bot response using Dialogflow CX API or any other bot integration
     const botMessage = `Bot response for "${message}"`;
     setTimeout(function() {
-      hideBotTyping();
       sendMessage("bot", botMessage);
-    }, 2000);
+      setTimeout(scrollChatToBottom, 0); // Delay scrolling to ensure the message is rendered
+    }, 1000);
   }
 
-  function scrollChatToBottom() {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+ function scrollChatToBottom() {
+  const lastMessage = chatMessages.lastElementChild;
+  lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+}
 });
