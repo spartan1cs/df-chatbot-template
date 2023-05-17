@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const message = messageInput.value.trim();
     if (message !== "") {
       sendMessage("user", message);
-      getBotResponse(message);
       messageInput.value = "";
       messageInput.focus();
-      setTimeout(scrollChatToBottom, 0); // Delay scrolling to ensure the message is rendered
+      showBotTypingIndicator();
+      getBotResponse(message);
     }
   }
 
@@ -32,6 +32,37 @@ document.addEventListener("DOMContentLoaded", function() {
     messageContainer.appendChild(messageContent);
 
     chatMessages.appendChild(messageContainer);
+    scrollChatToBottom();
+  }
+
+  function showBotTypingIndicator() {
+    const typingIndicatorContainer = createTypingIndicatorContainer();
+    const typingIndicator = createTypingIndicator();
+
+    typingIndicatorContainer.appendChild(typingIndicator);
+    chatMessages.appendChild(typingIndicatorContainer);
+    scrollChatToBottom();
+  }
+
+  function hideBotTypingIndicator() {
+    const typingIndicatorContainer = document.getElementById("typing-indicator-container");
+    if (typingIndicatorContainer) {
+      typingIndicatorContainer.remove();
+    }
+  }
+
+  function createTypingIndicatorContainer() {
+    const typingIndicatorContainer = document.createElement("div");
+    typingIndicatorContainer.id = "typing-indicator-container";
+    typingIndicatorContainer.classList.add("message", "bot-message");
+    return typingIndicatorContainer;
+  }
+
+  function createTypingIndicator() {
+    const typingIndicator = document.createElement("div");
+    typingIndicator.classList.add("message-content", "typing-indicator");
+    typingIndicator.textContent = "Bot is typing...";
+    return typingIndicator;
   }
 
   function createMessageContainer(sender) {
@@ -59,13 +90,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // Simulate bot response using Dialogflow CX API or any other bot integration
     const botMessage = `Bot response for "${message}"`;
     setTimeout(function() {
+      hideBotTypingIndicator();
       sendMessage("bot", botMessage);
       setTimeout(scrollChatToBottom, 0); // Delay scrolling to ensure the message is rendered
     }, 1000);
   }
 
- function scrollChatToBottom() {
-  const lastMessage = chatMessages.lastElementChild;
-  lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
-}
+   function scrollChatToBottom() {
+    const lastMessage = chatMessages.lastElementChild;
+    lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+  }
 });
