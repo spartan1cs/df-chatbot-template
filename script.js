@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const message = messageInput.value.trim();
     if (message !== "") {
       sendMessage("user", message);
+      showBotTyping();
       getBotResponse(message);
       messageInput.value = "";
       messageInput.focus();
@@ -56,12 +57,27 @@ document.addEventListener("DOMContentLoaded", function() {
     return messageIcon;
   }
 
+  function showBotTyping() {
+    const typingIndicator = document.createElement("div");
+    typingIndicator.classList.add("typing-indicator");
+    typingIndicator.textContent = "Bot is typing...";
+    chatMessages.appendChild(typingIndicator);
+  }
+
+  function hideBotTyping() {
+    const typingIndicator = document.querySelector(".typing-indicator");
+    if (typingIndicator) {
+      typingIndicator.remove();
+    }
+  }
+
   function getBotResponse(message) {
     // Simulate bot response using Dialogflow CX API or any other bot integration
     const botMessage = `Bot response for "${message}"`;
     setTimeout(function() {
+      hideBotTyping();
       sendMessage("bot", botMessage);
-    }, 1000);
+    }, 2000);
   }
 
   function scrollChatToBottom() {
