@@ -1,3 +1,6 @@
+// Make sure to include the Dialogflow JavaScript library in your HTML file:
+// <script src="https://www.gstatic.com/dialogflow/agent/api.js"></script>
+
 document.addEventListener("DOMContentLoaded", function() {
   const messageInput = document.getElementById("message-input");
   const sendButton = document.getElementById("send-button");
@@ -16,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const message = messageInput.value.trim();
     if (message !== "") {
       sendMessage("user", message);
-      getBotResponse(message);
+      sendUserMessageToDialogflow(message);
       messageInput.value = "";
       messageInput.focus();
     }
@@ -56,12 +59,39 @@ document.addEventListener("DOMContentLoaded", function() {
     return messageIcon;
   }
 
-  function getBotResponse(message) {
-    // Simulate bot response using Dialogflow CX API or any other bot integration
-    const botMessage = `Bot response for "${message}"`;
-    setTimeout(function() {
-      sendMessage("bot", botMessage);
-    }, 1000);
+  function sendUserMessageToDialogflow(message) {
+    // Replace 'YOUR_PROJECT_ID' with your actual Dialogflow project ID
+    const projectId = 'YOUR_PROJECT_ID';
+
+    // Initialize Dialogflow client
+    const sessionClient = new dialogflow.SessionClient();
+
+    // Replace 'YOUR_AGENT_ID' with your actual Dialogflow agent ID
+    const agentId = 'YOUR_AGENT_ID';
+
+    // Replace 'YOUR_LANGUAGE_CODE' with the language code of your Dialogflow agent (e.g., 'en-US')
+    const languageCode = 'YOUR_LANGUAGE_CODE';
+
+    // Create a new session path
+    const sessionPath = sessionClient.sessionPath(projectId, agentId);
+
+    // Create a new query input
+    const queryInput = {
+      text: {
+        text: message,
+        languageCode: languageCode
+      }
+    };
+
+    // Send the user message to Dialogflow
+    sessionClient.detectIntent({ session: sessionPath, queryInput: queryInput })
+      .then(handleBotResponse)
+      .catch(console.error);
+  }
+
+  function handleBotResponse(response) {
+    const botMessage = response.queryResult.fulfillmentText;
+    sendMessage("bot", botMessage);
   }
 
   function scrollChatToBottom() {
